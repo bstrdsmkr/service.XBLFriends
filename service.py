@@ -19,6 +19,14 @@ class XBLMonitor:
 	def runProgram(self):
 		self.last_run = 0
 		seconds = 180
+		if ADDON.getSetting('startup_notify') =='true':
+			try:
+				db = sqlite.connect(DB)
+				db.execute('UPDATE friends SET status = 0')
+				db.commit()
+				db.close()
+			except:
+				xbmc.log('XBLFriends: Failed to reset status at startup')
 		while not xbmc.abortRequested:
 			if ADDON.getSetting('enable') =='true':
 				now = time.time()

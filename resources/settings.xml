@@ -2,5 +2,6 @@
    <category label="Xbox Live">
     <setting id="enable" type="bool" label="30000" default="true"/>
   	<setting id="gamertag" type="text" label="30001" default=""/>
+	<setting id="startup_notify" type="bool" label="30002" default="true"/>
    </category>
 </settings>

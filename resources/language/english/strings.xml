@@ -1,4 +1,5 @@
 <strings>
     <string id="30000">Enable Monitoring</string>
 	<string id="30001">Gamertag</string>
+	<string id="30002">Always notify at startup</string>
 </strings>
