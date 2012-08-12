@@ -25,7 +25,12 @@ class XBLMonitor:
 				if now > (self.last_run + seconds):
 					gamerTag = ADDON.getSetting('gamertag')
 					url = 'https://xboxapi.com/index.php/json/friends/%s' %gamerTag
-					data = json.load(urllib2.urlopen(url))
+					try:
+						data = urllib2.urlopen(url)
+						data = json.load(data)
+					except:
+						data = {'Success':False, 'Reason':'Failed to connect to url'}
+						self.last_run = self.last_run - 120 #In effect, wait 1 minute and try again.
 					if data['Success']:
 						if not os.path.isdir(os.path.dirname(DB)):
 							os.makedirs(os.path.dirname(DB))
@@ -41,6 +46,7 @@ class XBLMonitor:
 								db.commit()
 								if friend['IsOnline']:
 									builtin = "XBMC.Notification(%s,%s,5000,%s)" %(friend['GamerTag'],friend['Presence'],friend['LargeGamerTileUrl'])
+									builtin = builtin.encode('utf-8')
 									xbmc.executebuiltin(builtin)
 						db.close()
 						self.last_run = now
