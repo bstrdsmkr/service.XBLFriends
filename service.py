@@ -6,6 +6,7 @@ import xbmcaddon
 import json
 import urllib2
 from urllib import quote_plus
+from traceback import print_exc
 
 try:
 	from sqlite3 import dbapi2 as sqlite
@@ -77,15 +78,19 @@ class XBLMonitor:
 		self.current_rate, self.rate_limit = data['API_Limit'].split("/")
 		return data
 
+	def clear_status(self):
+		try:
+			db = sqlite.connect(DB)
+			db.execute('UPDATE friends SET status = 0')
+			db.commit()
+			db.close()
+		except:
+			xbmc.log('XBLFriends: Failed to reset status')
+			print_exc()
+
 	def runProgram(self):
 		if ADDON.getSetting('startup_notify') =='true':
-			try:
-				db = sqlite.connect(DB)
-				db.execute('UPDATE friends SET status = 0')
-				db.commit()
-				db.close()
-			except:
-				xbmc.log('XBLFriends: Failed to reset status at startup')
+			self.clear_status()
 		while not xbmc.abortRequested:
 			now = time.time()
 			if now > (self.last_run + self.seconds) and self.check_run_conditions():
@@ -94,7 +99,8 @@ class XBLMonitor:
 				except urllib2.URLError:
 					data = {'Success':False, 'Reason':'Failed to connect to url'}
 						#In effect, wait 1 minute and try again.
-					self.last_run = self.last_run - 120 
+					self.last_run = self.last_run - 120
+					print_exc()
 
 				if data['Success']:
 					self.do_notifications(data)
@@ -125,6 +131,7 @@ monitor = XBLMonitor()
 if mode == 'ondemand':
 	xbmc.log('XBLFriends: Running on demand')
 	data = monitor.get_friends()
+	monitor..clear_status()
 	monitor.do_notifications(data)
 else:
 	xbmc.log('XBLFriends: Notification service starting...')
