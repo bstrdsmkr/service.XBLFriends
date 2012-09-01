@@ -3,5 +3,6 @@
     <setting id="enable" type="bool" label="30000" default="true"/>
   	<setting id="gamertag" type="text" label="30001" default=""/>
 	<setting id="startup_notify" type="bool" label="30002" default="true"/>
+	<setting id="idle_timeout" type="integer" label="30003" default="300"/>
    </category>
 </settings>

@@ -25,6 +25,7 @@ class XBLMonitor:
 		self.current_rate = 0
 		self.seconds = 180
 		self.gamerTag = ADDON.getSetting('gamertag')
+		self.idle_timeout = ADDON.getSetting('idle_timeout')
 
 	def do_notifications(self, data):
 		if not os.path.isdir(os.path.dirname(DB)):
@@ -50,6 +51,7 @@ class XBLMonitor:
 	def check_run_conditions(self):
 		#Update in case things have changed since last check
 		self.gamerTag = ADDON.getSetting('gamertag')
+		self.idle_timeout = ADDON.getSetting('idle_timeout')
 		
 		#Is monitoring enabled?
 		if ADDON.getSetting('enable') =='false':
@@ -64,6 +66,10 @@ class XBLMonitor:
 		#Are we still under the rate limit?
 		if int(self.current_rate) > int(self.rate_limit):
 			xbmc.log('XBLFriends: Rate limit exceeded. Limit: %s Current: %s' %(self.rate_limit, self.current_rate))
+			return False
+		
+		if xbmc.getGlobalIdleTime() > self.idle_timeout:
+			xbmc.log('XBLFriends: XBMC is idle. Not fetching data. idle_timeout: %s' %self.idle_timeout, level=xbmc.LOGDEBUG)
 			return False
 		return True
 		
@@ -130,9 +136,12 @@ monitor = XBLMonitor()
 
 if mode == 'ondemand':
 	xbmc.log('XBLFriends: Running on demand')
-	data = monitor.get_friends()
-	monitor..clear_status()
-	monitor.do_notifications(data)
+	monitor.clear_status()
+	if int(monitor.current_rate) < int(monitor.rate_limit):
+		data = monitor.get_friends()
+		monitor.do_notifications(data)
+	else:
+		xbmc.log('XBLFriends: Rate limit exceeded. Limit: %s Current: %s' %(monitor.rate_limit, monitor.current_rate))
 else:
 	xbmc.log('XBLFriends: Notification service starting...')
 	monitor.runProgram()
