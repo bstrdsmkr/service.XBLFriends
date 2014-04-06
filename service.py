@@ -74,7 +74,7 @@ class XBLMonitor:
 		return True
 		
 	def get_friends(self):
-		url = 'https://xboxapi.com/index.php/json/friends/%s' %quote_plus(self.gamerTag)
+		url = 'https://xboxapi.com/v1/json/friends/%s' %quote_plus(self.gamerTag)
 		req = urllib2.Request(url)
 			#Identify ourselves
 		req.add_header('User-agent', 'XBLFriends service for XBMC')
